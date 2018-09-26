@@ -1,1 +1,120 @@
-<h1>Hello World</h1>
+<html><head>
+        <title>Drew's Routes</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="../styles/first.css?v=964487913">
+        <script src="../genericLibrary/myJSlib.js"></script>
+    </head>
+
+    <body>
+
+        <table style="position:absolute; top:0; left:0; min-height:100vh; width:100vw">
+            <tbody><tr valign="top">
+                <td>
+                    <h1>Drew's Routes</h1>
+
+                    <h2>A simple cloud based repository of GPX files for use on some Garmin devices.</h2>
+
+                    <img src="../resources/Aviator.png" alt="img">
+                    <img src="../resources/FRx.png" alt="img">
+                    <img src="../resources/Fenix3.png" alt="img">
+                    <img src="../resources/VA HR.png" alt="img">
+                    <img src="../resources/VA.png" alt="img">
+                </td>
+            </tr>
+            <tr valign="center">
+                <td>
+
+                    <div class="nicePanel" style="width:300px;margin:auto">
+
+                        <h3>Enter your details</h3>
+
+
+                        <p>username: <input type="text" id="username" onkeyup="loginChanged()" onmousedown="loginChanged()" name="username" placeholder="username..." required="" autofocus=""></p>
+
+                        <p>password: <input type="password" id="password" onkeyup="loginChanged()" onmousedown="loginChanged()" name="password" placeholder="password..." required=""></p>
+
+                        <p class="errorMessage" id="feedbackMessage"></p>
+
+
+                        <p><button onclick="login()">log in</button></p>
+                        <p><button onclick="newUser()">register</button></p>
+
+
+                    </div>
+
+
+                </td>
+            </tr>
+            <tr valign="bottom">
+                <td>
+                    <!-- the sticky footer!!! -->
+                    <footer>Legal Notice:  This site is reasonably safe but is not guaranteed to 
+          be completely secure.  Any information posted should not be of a 
+          sensitive nature.  Posting is done entirely at the user's own risk.</footer>
+                </td>
+            </tr>
+        </tbody></table>
+
+
+
+        <script>
+
+            function newUser() {
+                var username = document.getElementById('username').value;
+                var password = document.getElementById('password').value;
+                var feedbackMessage = document.getElementById('feedbackMessage');
+                var filteredUsername = regexUsername.exec(username);
+                var filteredPassword = regexPassword.exec(password);
+                //window.alert(username + ' ' + password + ' ' + filteredUsername+ ' ' + filteredPassword);
+                var sameUsername = filteredUsername == username;
+                var samePassword = filteredPassword == password;
+                //window.alert(sameUsername+ ' ' + samePassword);
+
+                feedbackMessage.innerHTML = 'checking availability...';
+                if (sameUsername && samePassword) {
+                    var request = 'request=register&username=' + username + '&password=' + password;
+                    //window.alert(request);
+                    post('../siteLibrary/xmlHttpServer.php', request, function (value) {
+                        //window.alert('server response to registration >' + value +'<');
+                        if (regexOK.exec(value)) {
+                            feedbackMessage.innerHTML = 'Registered successfully.';
+                        } else {
+                            feedbackMessage.innerHTML = 'Username exists.<br>Try a different username.';
+                            //feedbackMessage.innerHTML = value;
+                        }
+                    });
+                } else {
+                    feedbackMessage.innerHTML = 'Username and password must be 8+ characters long and only contain letters or numbers.';
+                }
+            }
+
+            function login() {
+                //window.alert('login');
+                document.getElementById('feedbackMessage').innerHTML = 'logging in...';
+
+                var username = document.getElementById('username');
+                var password = document.getElementById('password');
+                //window.alert('checking password and username');
+                var request = 'request=validateLogin&username=' + username.value + '&password=' + password.value;
+                post('../siteLibrary/xmlHttpServer.php', request, function (value) {
+                    //window.alert(value);
+                    if (regexOK.exec(value)) {
+                        window.location = '../site/confirmAccount.php';
+                    } else {
+                        document.getElementById('feedbackMessage').innerHTML = 'incorrect username or password';
+                        //document.getElementById('feedbackMessage').innerHTML = value;
+                    }
+                });
+
+            }
+
+            function loginChanged(event) {
+                document.getElementById('feedbackMessage').innerHTML = '';
+            }
+
+
+        </script>
+    
+
+</body></html>
